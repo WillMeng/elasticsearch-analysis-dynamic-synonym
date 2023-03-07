@@ -13,11 +13,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.codec.Charsets;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.synonym.SynonymMap;
 import org.elasticsearch.env.Environment;
+import org.elasticsearch.logging.LogManager;
+import org.elasticsearch.logging.Logger;
 
 
 /**
@@ -109,12 +111,15 @@ public class LocalSynonymFile implements SynonymFile {
             If the file does not exist, it will be scanned every time
               until the file is restored.
              */
+            logger.debug("start check is need reload synonym file 1");
             if (!Files.exists(synonymFilePath) && !Files.exists(synonymFilePath = deepSearch())) {
                 return false;
             }
+            logger.debug("start check is need reload synonym file 2");
             File synonymFile = synonymFilePath.toFile();
             if (synonymFile.exists()
                     && lastModified < synonymFile.lastModified()) {
+                logger.debug("start check is need reload synonym file 3");
                 lastModified = synonymFile.lastModified();
                 return true;
             }

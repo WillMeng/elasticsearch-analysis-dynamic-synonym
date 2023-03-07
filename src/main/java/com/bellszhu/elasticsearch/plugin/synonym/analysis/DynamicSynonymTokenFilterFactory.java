@@ -12,8 +12,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
+import org.elasticsearch.logging.LogManager;
+import org.elasticsearch.logging.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.synonym.SynonymMap;
@@ -64,7 +66,7 @@ public class DynamicSynonymTokenFilterFactory extends
             String name,
             Settings settings
     ) throws IOException {
-        super(indexSettings, name, settings);
+        super(name, settings);
 
         this.location = settings.get("synonyms_path");
         if (this.location == null) {
@@ -171,7 +173,7 @@ public class DynamicSynonymTokenFilterFactory extends
             }
             if (scheduledFuture == null) {
                 scheduledFuture = pool.scheduleAtFixedRate(new Monitor(synonymFile),
-                                interval, interval, TimeUnit.SECONDS);
+                        interval, interval, TimeUnit.SECONDS);
             }
             return synonymFile;
         } catch (Exception e) {

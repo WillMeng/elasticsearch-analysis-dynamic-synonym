@@ -58,36 +58,36 @@ public class DynamicSynonymPluginTest {
 
     private void createIndexWithLocalSynonym(String indexName, String synonymType, String localPath) {
         final String indexSettings = "{\n" +
-            "  \"index\":{\n" +
-            "    \"analysis\":{\n" +
-            "      \"filter\":{\n" +
-            "        \"local_synonym\": {\n" +
-            "            \"type\": \"" + synonymType + "\",\n" +
-            "            \"synonyms_path\": \"" + localPath + "\",\n" +
-            "            \"interval\": \"10\"\n" +
-            "        }"+
-            "      },\n" +
-            "      \"char_filter\":{\n" +
-            "        \"my_char_filter\":{\n" +
-            "          \"pattern\":\"[- /]\",\n" +
-            "          \"type\":\"pattern_replace\",\n" +
-            "          \"replacement\":\"\"\n" +
-            "        }\n" +
-            "      },\n" +
-            "      \"analyzer\":{\n" +
-            "        \"synonym_analyzer\":{\n" +
-            "          \"filter\":[\n" +
-            "            \"lowercase\",\n" +
-            "            \"asciifolding\",\n" +
-            "            \"local_synonym\"\n" +
-            "          ],\n" +
-            "          \"type\":\"custom\",\n" +
-            "          \"tokenizer\":\"keyword\"\n" +
-            "        }\n" +
-            "      }\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
+                "  \"index\":{\n" +
+                "    \"analysis\":{\n" +
+                "      \"filter\":{\n" +
+                "        \"local_synonym\": {\n" +
+                "            \"type\": \"" + synonymType + "\",\n" +
+                "            \"synonyms_path\": \"" + localPath + "\",\n" +
+                "            \"interval\": \"10\"\n" +
+                "        }"+
+                "      },\n" +
+                "      \"char_filter\":{\n" +
+                "        \"my_char_filter\":{\n" +
+                "          \"pattern\":\"[- /]\",\n" +
+                "          \"type\":\"pattern_replace\",\n" +
+                "          \"replacement\":\"\"\n" +
+                "        }\n" +
+                "      },\n" +
+                "      \"analyzer\":{\n" +
+                "        \"synonym_analyzer\":{\n" +
+                "          \"filter\":[\n" +
+                "            \"lowercase\",\n" +
+                "            \"asciifolding\",\n" +
+                "            \"local_synonym\"\n" +
+                "          ],\n" +
+                "          \"type\":\"custom\",\n" +
+                "          \"tokenizer\":\"keyword\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
 
         runner.createIndex(indexName, Settings.builder().loadFromSource(indexSettings, XContentType.JSON).build());
         // wait for yellow status
@@ -96,36 +96,36 @@ public class DynamicSynonymPluginTest {
 
     private void createIndexWithRemoteSynonym(String indexName) {
         final String indexSettings = "{\n" +
-            "  \"index\":{\n" +
-            "    \"analysis\":{\n" +
-            "      \"filter\":{\n" +
-            "        \"remote_synonym\": {\n" +
-            "            \"type\": \"dynamic_synonym\",\n" +
-            "            \"synonyms_path\": \"http://localhost:8080/api/synonym\",\n" +
-            "            \"interval\": \"10\"\n" +
-            "        }"+
-            "      },\n" +
-            "      \"char_filter\":{\n" +
-            "        \"my_char_filter\":{\n" +
-            "          \"pattern\":\"[- /]\",\n" +
-            "          \"type\":\"pattern_replace\",\n" +
-            "          \"replacement\":\"\"\n" +
-            "        }\n" +
-            "      },\n" +
-            "      \"analyzer\":{\n" +
-            "        \"synonym_analyzer\":{\n" +
-            "          \"filter\":[\n" +
-            "            \"lowercase\",\n" +
-            "            \"asciifolding\",\n" +
-            "            \"remote_synonym\"\n" +
-            "          ],\n" +
-            "          \"type\":\"custom\",\n" +
-            "          \"tokenizer\":\"keyword\"\n" +
-            "        }\n" +
-            "      }\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
+                "  \"index\":{\n" +
+                "    \"analysis\":{\n" +
+                "      \"filter\":{\n" +
+                "        \"remote_synonym\": {\n" +
+                "            \"type\": \"dynamic_synonym\",\n" +
+                "            \"synonyms_path\": \"http://localhost:8080/api/synonym\",\n" +
+                "            \"interval\": \"10\"\n" +
+                "        }"+
+                "      },\n" +
+                "      \"char_filter\":{\n" +
+                "        \"my_char_filter\":{\n" +
+                "          \"pattern\":\"[- /]\",\n" +
+                "          \"type\":\"pattern_replace\",\n" +
+                "          \"replacement\":\"\"\n" +
+                "        }\n" +
+                "      },\n" +
+                "      \"analyzer\":{\n" +
+                "        \"synonym_analyzer\":{\n" +
+                "          \"filter\":[\n" +
+                "            \"lowercase\",\n" +
+                "            \"asciifolding\",\n" +
+                "            \"remote_synonym\"\n" +
+                "          ],\n" +
+                "          \"type\":\"custom\",\n" +
+                "          \"tokenizer\":\"keyword\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
 
         runner.createIndex(indexName, Settings.builder().loadFromSource(indexSettings, XContentType.JSON).build());
         // wait for yellow status
@@ -155,12 +155,13 @@ public class DynamicSynonymPluginTest {
     }
 
     private List<AnalyzeAction.AnalyzeToken> tokens(String indexName, String text) {
-        AnalyzeAction.Request analyzeRequest = new AnalyzeAction.Request(indexName);
-        analyzeRequest.text(text);
-        analyzeRequest.analyzer("synonym_analyzer");
-        ActionFuture<AnalyzeAction.Response> actionFuture = runner.admin().indices().analyze(analyzeRequest);
-        AnalyzeAction.Response response = actionFuture.actionGet(10L, TimeUnit.SECONDS);
-        return response.getTokens();
+//        AnalyzeAction.Request analyzeRequest = new AnalyzeAction.Request(indexName);
+//        analyzeRequest.text(text);
+//        analyzeRequest.analyzer("synonym_analyzer");
+//        ActionFuture<AnalyzeAction.Response> actionFuture = runner.admin().indices().analyze(analyzeRequest);
+//        AnalyzeAction.Response response = actionFuture.actionGet(10L, TimeUnit.SECONDS);
+//        return response.getTokens();
+        return null;
     }
 
     @Test

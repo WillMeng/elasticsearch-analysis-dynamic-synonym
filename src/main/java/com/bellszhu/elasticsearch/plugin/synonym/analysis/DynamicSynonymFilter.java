@@ -35,6 +35,8 @@ import org.apache.lucene.util.CharsRef;
 import org.apache.lucene.util.CharsRefBuilder;
 import org.apache.lucene.util.RamUsageEstimator;
 import org.apache.lucene.util.fst.FST;
+import org.elasticsearch.logging.LogManager;
+import org.elasticsearch.logging.Logger;
 
 /**
  * Matches single or multi word synonyms in a token stream. This token stream
@@ -108,6 +110,7 @@ import org.apache.lucene.util.fst.FST;
 
 public final class DynamicSynonymFilter extends AbsSynonymFilter {
 
+    private static final Logger logger = LogManager.getLogger("dynamic-synonym");
     private static final String TYPE_SYNONYM = "SYNONYM";
     private final boolean ignoreCase;
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
@@ -511,6 +514,7 @@ public final class DynamicSynonymFilter extends AbsSynonymFilter {
     }
 
     void update(SynonymMap synonymMap) {
+        logger.debug("start DynamicSynonymFilter");
         this.synonyms = synonymMap;
         this.fst = synonyms.fst;
         if (fst == null) {
@@ -606,13 +610,13 @@ public final class DynamicSynonymFilter extends AbsSynonymFilter {
             }
             if (count == endOffsets.length) {
                 final int[] next = new int[ArrayUtil.oversize(1 + count,
-                                                              Integer.BYTES)];
+                        Integer.BYTES)];
                 System.arraycopy(endOffsets, 0, next, 0, count);
                 endOffsets = next;
             }
             if (count == posLengths.length) {
                 final int[] next = new int[ArrayUtil.oversize(1 + count,
-                                                              Integer.BYTES)];
+                        Integer.BYTES)];
                 System.arraycopy(posLengths, 0, next, 0, count);
                 posLengths = next;
             }
