@@ -219,7 +219,7 @@ public final class DynamicSynonymFilter extends AbsSynonymFilter {
             final char[] buffer;
             final int bufferLen;
 
-            int inputEndOffset = 0;
+            int inputEndOffset;
 
             if (curNextRead == nextWrite) {
 
