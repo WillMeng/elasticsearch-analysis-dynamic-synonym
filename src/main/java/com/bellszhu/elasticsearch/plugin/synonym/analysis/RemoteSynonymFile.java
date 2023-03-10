@@ -8,19 +8,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.text.ParseException;
 
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.elasticsearch.logging.LogManager;
+import org.elasticsearch.logging.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.synonym.SynonymMap;
 import org.elasticsearch.analysis.common.ESSolrSynonymParser;
@@ -190,31 +194,36 @@ public class RemoteSynonymFile implements SynonymFile {
                 .setConnectionRequestTimeout(10 * 1000)
                 .setConnectTimeout(10 * 1000).setSocketTimeout(15 * 1000)
                 .build();
-        HttpHead head = AccessController.doPrivileged((PrivilegedAction<HttpHead>) () -> new HttpHead(location));
-        head.setConfig(rc);
+//        HttpHead head = new HttpHead(location);
+//        head.setConfig(rc);
+        HttpGet get = new HttpGet(location);
+        get.setConfig(rc);
 
         // 设置请求头
         if (lastModified != null) {
-            head.setHeader("If-Modified-Since", lastModified);
+            get.setHeader("If-Modified-Since", lastModified);
         }
         if (eTags != null) {
-            head.setHeader("If-None-Match", eTags);
+            get.setHeader("If-None-Match", eTags);
         }
+
 
         CloseableHttpResponse response = null;
         try {
-            response = executeHttpRequest(head);
+            response = executeHttpRequest(get);
+            logger.debug("start check is need reload synonym api 1");
             if (response.getStatusLine().getStatusCode() == 200) { // 返回200 才做操作
-                if (!response.getLastHeader(LAST_MODIFIED_HEADER).getValue()
-                        .equalsIgnoreCase(lastModified)
-                        || !response.getLastHeader(ETAG_HEADER).getValue()
-                        .equalsIgnoreCase(eTags)) {
+                String lastModifiedTmp = response.getLastHeader(LAST_MODIFIED_HEADER) == null ? null
+                        : response.getLastHeader(LAST_MODIFIED_HEADER)
+                        .getValue();
+                String eTagsTmp = response.getLastHeader(ETAG_HEADER) == null ? null
+                        : response.getLastHeader(ETAG_HEADER).getValue();
+                if ((lastModifiedTmp != null && !lastModifiedTmp.equalsIgnoreCase(lastModified))
+                        || (eTagsTmp != null && !eTagsTmp.equalsIgnoreCase(eTags))) {
 
-                    lastModified = response.getLastHeader(LAST_MODIFIED_HEADER) == null ? null
-                            : response.getLastHeader(LAST_MODIFIED_HEADER)
-                            .getValue();
-                    eTags = response.getLastHeader(ETAG_HEADER) == null ? null
-                            : response.getLastHeader(ETAG_HEADER).getValue();
+                    lastModified = lastModifiedTmp;
+                    eTags = eTagsTmp;
+                    logger.debug("start check is need reload synonym api 2");
                     return true;
                 }
             } else if (response.getStatusLine().getStatusCode() == 304) {
@@ -223,7 +232,9 @@ public class RemoteSynonymFile implements SynonymFile {
                 logger.info("remote synonym {} return bad code {}", location,
                         response.getStatusLine().getStatusCode());
             }
-        } finally {
+        } catch (Exception e) {
+            logger.error("request api {} error!", location, e);
+        }finally {
             try {
                 if (response != null) {
                     response.close();

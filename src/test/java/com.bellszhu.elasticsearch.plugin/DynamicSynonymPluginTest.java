@@ -16,6 +16,7 @@
 
 package com.bellszhu.elasticsearch.plugin;
 
+import com.bellszhu.elasticsearch.plugin.synonym.analysis.RemoteSynonymFile;
 import org.codelibs.elasticsearch.runner.ElasticsearchClusterRunner;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
@@ -40,20 +41,20 @@ public class DynamicSynonymPluginTest {
     @Before
     public void setUp() {
         // create runner instance
-        runner = new ElasticsearchClusterRunner();
+        runner = null;//new ElasticsearchClusterRunner();
         // create ES nodes
-        runner.build(newConfigs()
-                .numOfNode(1) // Create a test node, default number of node is 3.
-                .pluginTypes("com.bellszhu.elasticsearch.plugin.DynamicSynonymPlugin")
-        );
+//        runner.build(newConfigs()
+//                .numOfNode(1) // Create a test node, default number of node is 3.
+//                .pluginTypes("com.bellszhu.elasticsearch.plugin.DynamicSynonymPlugin")
+//        );
     }
 
     @After
     public void tearDown() throws IOException {
         // close runner
-        runner.close();
+//        runner.close();
         // delete all files
-        runner.clean();
+//        runner.clean();
     }
 
     private void createIndexWithLocalSynonym(String indexName, String synonymType, String localPath) {
@@ -101,7 +102,7 @@ public class DynamicSynonymPluginTest {
                 "      \"filter\":{\n" +
                 "        \"remote_synonym\": {\n" +
                 "            \"type\": \"dynamic_synonym\",\n" +
-                "            \"synonyms_path\": \"http://localhost:8080/api/synonym\",\n" +
+                "            \"synonyms_path\": \"http://10.2.0.5:8009/api/ext/synonym/load/search_account_setting_index/customer\",\n" +
                 "            \"interval\": \"10\"\n" +
                 "        }"+
                 "      },\n" +
